@@ -39,7 +39,9 @@ werden von der Plattform automatisch abgewickelt und ausgeliefert. **Aber:**
       Rechnungsgenerator, MwSt-Rechner, Stundensatz-Rechner, Kleinunternehmer-Check
 - [x] **Ziel 4** – SEO (Meta-Tags, Sitemap, robots.txt, strukturierte Daten) +
       automatisches Deployment per GitHub Actions + automatische Tests
-- [x] **Ziel 5** – Bezahlprodukt erstellt (wird separat geliefert, **nicht** im öffentlichen Repo)
+- [x] **Ziel 5** – Bezahlprodukt „Freelancer-Vorlagenpaket" (17 Seiten PDF) + Verkaufstext erstellt.
+      Wurde dir direkt im Chat geschickt und liegt **bewusst nicht** im öffentlichen Repo
+      (`produkt/` steht in `.gitignore`), sonst könnte es jeder gratis herunterladen.
 - [ ] **Ziel 6 – DEINE Schritte** (kann niemand für dich erledigen, siehe unten)
 - [ ] **Ziel 7** – Reichweite: Seite in Foren/Reddit/Communities teilen, Google Search Console
 - [ ] **Ziel 8** – Ausbau: weitere Tools (z. B. Mahnungsgenerator, Brutto-Netto für Freelancer),
@@ -51,7 +53,8 @@ werden von der Plattform automatisch abgewickelt und ausgeliefert. **Aber:**
 2. **GitHub Pages aktivieren:** Repo → *Settings* → *Pages* → *Source: GitHub Actions*.
    Danach ist die Seite erreichbar unter `https://tynnee89.github.io/ClaudeBuisness/`.
 3. **Gumroad-Konto** (oder Ko-fi Shop / Lemon Squeezy) anlegen, das Vorlagenpaket-PDF
-   hochladen, Preis z. B. 9 € festlegen, Link kopieren.
+   hochladen, Titel und Beschreibung aus `Verkaufstext.md` übernehmen,
+   Preis z. B. 9 € festlegen, Link kopieren.
 4. **Ko-fi-Konto** für Spenden anlegen (optional), Link kopieren.
 5. Links in `docs/assets/config.js` eintragen – Buttons erscheinen automatisch, sobald
    ein Link gesetzt ist.
