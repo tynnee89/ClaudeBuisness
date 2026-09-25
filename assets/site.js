@@ -23,6 +23,7 @@
         '<a href="' + root + 'tools/mwst-rechner.html">MwSt</a>' +
         '<a href="' + root + 'tools/stundensatz-rechner.html">Stundensatz</a>' +
         '<a href="' + root + 'tools/kleinunternehmer-check.html">Kleinunternehmer</a>' +
+        '<a href="' + root + 'tools/verzugszinsen-rechner.html">Verzugszinsen</a>' +
       "</nav></div></header>"
   );
   document.body.insertBefore(header, document.body.firstChild);

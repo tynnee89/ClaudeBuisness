@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verzugszinsen berechnen & Mahnung schreiben (Basiszinssatz 2026) | Werkbank</title>
+<meta name="description" content="Verzugszinsen nach § 288 BGB taggenau berechnen – mit aktuellem Basiszinssatz 1,52 % (seit 1.7.2026), 40-€-Pauschale für Unternehmen und fertigem Mahnungstext zum Kopieren.">
+<link rel="canonical" href="https://tynnee89.github.io/ClaudeBuisness/tools/verzugszinsen-rechner.html">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧰</text></svg>">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<main class="wrap">
+  <h1>Verzugszinsen berechnen & Mahnung schreiben</h1>
+  <p class="lead">Kunde zahlt nicht? Berechne die gesetzlichen Verzugszinsen taggenau und erhalte einen fertigen Mahnungstext.</p>
+  <div class="card">
+    <div class="row">
+      <div><label for="amount">Offener Betrag (€)</label><input id="amount" type="number" step="0.01" value="1000"></div>
+      <div><label for="from">Verzug seit (erster Verzugstag)</label><input id="from" type="date"></div>
+      <div><label for="to">Zinsen berechnen bis</label><input id="to" type="date"></div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="who">Schuldner ist …</label>
+        <select id="who"><option value="b2b">ein Unternehmen (9 %-Punkte + 40 € Pauschale)</option><option value="b2c">ein Verbraucher (5 %-Punkte)</option></select>
+      </div>
+      <div><label for="inv">Rechnungsnummer (für den Mahnungstext)</label><input id="inv" value="2026-001"></div>
+    </div>
+    <div class="result" aria-live="polite">
+      <table>
+        <tr><td>Offener Betrag</td><td class="num" id="rAmount"></td></tr>
+        <tr><td>Verzugszinsen (<span id="rDays"></span> Tage)</td><td class="num" id="rInterest"></td></tr>
+        <tr id="feeRow"><td>Verzugspauschale § 288 Abs. 5 BGB</td><td class="num">40,00 €</td></tr>
+        <tr><th>Gesamtforderung</th><td class="num big" id="rTotal"></td></tr>
+      </table>
+      <p style="margin:.5em 0 0;font-size:.9rem;color:var(--muted)" id="rPeriods"></p>
+    </div>
+    <label for="letter">Mahnungstext zum Kopieren</label>
+    <textarea id="letter" rows="14" readonly></textarea>
+    <p><button class="btn" id="copy" type="button">Text kopieren</button></p>
+  </div>
+
+  <div data-promo></div>
+
+  <h2>Aktueller Basiszinssatz</h2>
+  <p>Seit dem 1. Juli 2026 beträgt der Basiszinssatz nach § 247 BGB <strong>1,52 %</strong> (vorher 1,27 %). Daraus ergeben sich Verzugszinsen von <strong>10,52 %</strong> pro Jahr für Unternehmen und <strong>6,52 %</strong> für Verbraucher. Die Bundesbank passt den Satz zum 1. Januar und 1. Juli an.</p>
+  <h2>Wann ist ein Kunde in Verzug?</h2>
+  <p>Nach § 286 BGB tritt Verzug ein durch eine Mahnung nach Fälligkeit, automatisch bei einem kalendermäßig bestimmten Zahlungsziel („zahlbar bis 15.10.2026") oder spätestens 30 Tage nach Fälligkeit und Zugang der Rechnung – bei Verbrauchern nur, wenn die Rechnung darauf hinweist.</p>
+  <p>Deine nächste Rechnung schreibst du am besten gleich mit festem Zahlungsdatum im <a href="rechnung.html">Rechnungsgenerator</a>.</p>
+  <p class="note">Angaben ohne Gewähr, keine Rechtsberatung.</p>
+</main>
+<script src="../assets/calc.js"></script>
+<script src="../assets/config.js"></script>
+<script src="../assets/site.js"></script>
+<script>
+(function () {
+  var C = window.WerkbankCalc;
+  function $(id) { return document.getElementById(id); }
+  function de(iso) { var p = iso.split("-"); return p[2] + "." + p[1] + "." + p[0]; }
+  function iso(d) { return d.toISOString().slice(0, 10); }
+  var today = new Date();
+  var ago = new Date(today.getTime() - 45 * 86400000);
+  $("to").value = iso(today);
+  $("from").value = iso(ago);
+
+  function update() {
+    var b2b = $("who").value === "b2b";
+    var amount = parseFloat($("amount").value) || 0;
+    var r = C.defaultInterest({ amount: amount, from: $("from").value, to: $("to").value, b2b: b2b });
+    $("rAmount").textContent = C.formatEUR(amount);
+    $("rDays").textContent = r.days;
+    $("rInterest").textContent = C.formatEUR(r.interest);
+    $("feeRow").classList.toggle("hidden", !b2b);
+    $("rTotal").textContent = C.formatEUR(r.total);
+    $("rPeriods").textContent = r.periods.map(function (p) {
+      return p.days + " Tage zu " + p.rate.toLocaleString("de-DE") + " %";
+    }).join(" + ");
+    var deadline = new Date(today.getTime() + 7 * 86400000).toLocaleDateString("de-DE");
+    $("letter").value =
+      "Betreff: Mahnung – Rechnung " + $("inv").value + "\n\n" +
+      "Sehr geehrte Damen und Herren,\n\n" +
+      "die Rechnung " + $("inv").value + " über " + C.formatEUR(amount) + " ist trotz Fälligkeit noch nicht beglichen. " +
+      "Sie befinden sich seit dem " + ($("from").value ? de($("from").value) : "[DATUM]") + " in Zahlungsverzug.\n\n" +
+      "Offener Rechnungsbetrag: " + C.formatEUR(amount) + "\n" +
+      "Verzugszinsen (" + (b2b ? "9" : "5") + " Prozentpunkte über dem Basiszinssatz, " + r.days + " Tage): " + C.formatEUR(r.interest) + "\n" +
+      (b2b ? "Verzugspauschale gemäß § 288 Abs. 5 BGB: " + C.formatEUR(40) + "\n" : "") +
+      "Gesamtforderung: " + C.formatEUR(r.total) + "\n\n" +
+      "Bitte überweisen Sie den Gesamtbetrag bis spätestens " + deadline + " auf das in der Rechnung angegebene Konto.\n\n" +
+      "Mit freundlichen Grüßen\n[DEIN NAME]";
+  }
+  document.querySelector(".card").addEventListener("input", update);
+  $("copy").onclick = function () {
+    var t = $("letter");
+    if (navigator.clipboard) navigator.clipboard.writeText(t.value).catch(function () {});
+    else { t.select(); document.execCommand("copy"); }
+    $("copy").textContent = "Kopiert ✓";
+  };
+  update();
+})();
+</script>
+</body>
+</html>
