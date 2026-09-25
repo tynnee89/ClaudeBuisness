@@ -44,14 +44,16 @@ werden von der Plattform automatisch abgewickelt und ausgeliefert. **Aber:**
       (`produkt/` steht in `.gitignore`), sonst könnte es jeder gratis herunterladen.
 - [ ] **Ziel 6 – DEINE Schritte** (kann niemand für dich erledigen, siehe unten)
 - [ ] **Ziel 7** – Reichweite: Seite in Foren/Reddit/Communities teilen, Google Search Console
-- [ ] **Ziel 8** – Ausbau: weitere Tools (z. B. Mahnungsgenerator, Brutto-Netto für Freelancer),
-      je Tool = neue Suchbegriffe = mehr Traffic
+- [ ] **Ziel 8** – Ausbau: weitere Tools, je Tool = neue Suchbegriffe = mehr Traffic
+  - [x] Verzugszinsen-Rechner + Mahnungstext (Basiszinssatz 1,52 % seit 01.07.2026)
+  - [ ] Weitere Ideen: Angebotsgenerator, Brutto-Netto für Freelancer, Gewerbesteuer-Rechner
 
 ## Ziel 6 – Deine To-dos (ca. 1 Stunde, 0 €)
 
-1. **Branch nach `main` mergen** (Pull Request auf GitHub erstellen und mergen).
-2. **GitHub Pages aktivieren:** Repo → *Settings* → *Pages* → *Source: GitHub Actions*.
-   Danach ist die Seite erreichbar unter `https://tynnee89.github.io/ClaudeBuisness/`.
+1. ~~Branch nach `main` mergen~~ – erledigt.
+2. ~~GitHub Pages aktivieren~~ – erledigt: Jeder Push auf `main` veröffentlicht `docs/`
+   automatisch über den Branch `gh-pages`. Seite: `https://tynnee89.github.io/ClaudeBuisness/`
+   (Falls sie nicht erscheint: *Settings → Pages → Branch: gh-pages / root*.)
 3. **Gumroad-Konto** (oder Ko-fi Shop / Lemon Squeezy) anlegen, das Vorlagenpaket-PDF
    hochladen, Titel und Beschreibung aus `Verkaufstext.md` übernehmen,
    Preis z. B. 9 € festlegen, Link kopieren.

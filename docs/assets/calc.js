@@ -88,6 +88,65 @@
     return { net: net, vat: v, gross: round2(net + v) };
   }
 
+
+  /**
+   * Basiszinssatz nach § 247 BGB (Deutsche Bundesbank), jeweils gültig ab Datum.
+   * Bei jeder Anpassung (1.1. / 1.7.) hier oben einen neuen Eintrag ergänzen.
+   */
+  var BASE_RATES = [
+    { from: "2024-01-01", rate: 3.62 },
+    { from: "2024-07-01", rate: 3.37 },
+    { from: "2025-01-01", rate: 2.27 },
+    { from: "2025-07-01", rate: 1.27 },
+    { from: "2026-01-01", rate: 1.27 },
+    { from: "2026-07-01", rate: 1.52 },
+  ];
+
+  function dayNum(iso) {
+    var p = iso.split("-");
+    return Date.UTC(+p[0], +p[1] - 1, +p[2]) / 86400000;
+  }
+
+  function baseRateOn(iso) {
+    var r = null;
+    BASE_RATES.forEach(function (b) { if (b.from <= iso) r = b.rate; });
+    return r;
+  }
+
+  /**
+   * Verzugszinsen nach § 288 BGB, taggenau (act/365), mit Wechsel des Basiszinssatzes.
+   * input: { amount, from, to, b2b }  – from = erster Verzugstag, to = letzter Zinstag (inklusive)
+   */
+  function defaultInterest(input) {
+    var surcharge = input.b2b ? 9 : 5;
+    var start = dayNum(input.from);
+    var end = dayNum(input.to);
+    if (!(end >= start) || BASE_RATES[0].from > input.from) {
+      return { interest: 0, days: 0, periods: [], fee: 0, total: round2(input.amount || 0) };
+    }
+    var periods = [];
+    var interest = 0;
+    for (var i = 0; i < BASE_RATES.length; i++) {
+      var pStart = Math.max(start, dayNum(BASE_RATES[i].from));
+      var pEnd = i + 1 < BASE_RATES.length ? Math.min(end, dayNum(BASE_RATES[i + 1].from) - 1) : end;
+      if (pEnd < pStart) continue;
+      var days = pEnd - pStart + 1;
+      var rate = Math.max(0, BASE_RATES[i].rate + surcharge);
+      var z = input.amount * (rate / 100) * (days / 365);
+      interest += z;
+      periods.push({ days: days, rate: round2(rate), interest: round2(z) });
+    }
+    interest = round2(interest);
+    var fee = input.b2b ? 40 : 0;
+    return {
+      interest: interest,
+      days: end - start + 1,
+      periods: periods,
+      fee: fee,
+      total: round2(input.amount + interest + fee),
+    };
+  }
+
   function formatEUR(x) {
     if (!isFinite(x)) return "–";
     return x.toLocaleString("de-DE", { style: "currency", currency: "EUR" });
@@ -100,6 +159,9 @@
     smallBusiness: smallBusiness,
     invoiceTotals: invoiceTotals,
     formatEUR: formatEUR,
+    BASE_RATES: BASE_RATES,
+    baseRateOn: baseRateOn,
+    defaultInterest: defaultInterest,
     KU_PREV_LIMIT: KU_PREV_LIMIT,
     KU_CURRENT_LIMIT: KU_CURRENT_LIMIT,
   };

@@ -43,3 +43,27 @@ test("Rechnungssummen", () => {
   assert.deepEqual(C.invoiceTotals(items, 19, false), { net: 115, vat: 21.85, gross: 136.85 });
   assert.deepEqual(C.invoiceTotals(items, 19, true), { net: 115, vat: 0, gross: 115 });
 });
+
+test("Basiszinssatz-Lookup", () => {
+  assert.equal(C.baseRateOn("2026-06-30"), 1.27);
+  assert.equal(C.baseRateOn("2026-07-01"), 1.52);
+});
+
+test("Verzugszinsen B2B über einen Zinswechsel", () => {
+  // 30 Tage zu 10,27 % (1.6.–30.6.) + 31 Tage zu 10,52 % (1.7.–31.7.)
+  const r = C.defaultInterest({ amount: 1000, from: "2026-06-01", to: "2026-07-31", b2b: true });
+  assert.equal(r.days, 61);
+  assert.equal(r.periods.length, 2);
+  assert.equal(r.interest, C.round2(1000 * 0.1027 * 30 / 365 + 1000 * 0.1052 * 31 / 365));
+  assert.equal(r.fee, 40);
+});
+
+test("Verzugszinsen Verbraucher ohne Pauschale", () => {
+  const r = C.defaultInterest({ amount: 365, from: "2026-07-01", to: "2026-07-10", b2b: false });
+  assert.equal(r.interest, C.round2(365 * 0.0652 * 10 / 365));
+  assert.equal(r.fee, 0);
+});
+
+test("Verzugszinsen: Ende vor Beginn ergibt 0", () => {
+  assert.equal(C.defaultInterest({ amount: 100, from: "2026-07-10", to: "2026-07-01", b2b: true }).interest, 0);
+});

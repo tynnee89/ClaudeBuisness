@@ -94,4 +94,6 @@ nav.main a { margin-left: 0; }
   .item-row input[data-k="desc"] { grid-column: 1 / -1; }
   .item-row.head { display: none; }
   .invoice { padding: 16px; font-size: 13px; }
+  .result { padding: 12px; }
+  .result td.big { font-size: 1.15rem; }
 }
