@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://tynnee89.github.io/ClaudeBuisness/sitemap.xml

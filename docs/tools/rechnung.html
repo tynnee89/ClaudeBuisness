@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rechnung erstellen kostenlos – Online-Rechnungsgenerator als PDF | Werkbank</title>
+<meta name="description" content="Rechnung kostenlos online erstellen und als PDF speichern. Mit allen Pflichtangaben nach § 14 UStG, Kleinunternehmer-Hinweis nach § 19 UStG. Ohne Anmeldung, Daten bleiben im Browser.">
+<link rel="canonical" href="https://tynnee89.github.io/ClaudeBuisness/tools/rechnung.html">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧰</text></svg>">
+<link rel="stylesheet" href="../assets/style.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Rechnungsgenerator","applicationCategory":"BusinessApplication","operatingSystem":"Browser","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"inLanguage":"de"}
+</script>
+</head>
+<body data-root="../">
+<main class="wrap">
+  <div class="no-print">
+    <h1>Rechnung erstellen – kostenlos als PDF</h1>
+    <p class="lead">Formular ausfüllen, Vorschau prüfen, „Als PDF speichern" klicken. Deine Daten verlassen nie deinen Browser und werden nur lokal auf deinem Gerät gespeichert.</p>
+
+    <div class="card">
+      <div class="row">
+        <div>
+          <label for="from">Dein Name / Firma & Anschrift</label>
+          <textarea id="from" placeholder="Max Muster&#10;Musterstraße 1&#10;12345 Musterstadt"></textarea>
+        </div>
+        <div>
+          <label for="to">Kunde & Anschrift</label>
+          <textarea id="to" placeholder="Kunde GmbH&#10;Kundenweg 5&#10;54321 Kundenstadt"></textarea>
+        </div>
+      </div>
+      <div class="row">
+        <div><label for="number">Rechnungsnummer</label><input id="number" value="2026-001"></div>
+        <div><label for="date">Rechnungsdatum</label><input id="date" type="date"></div>
+        <div><label for="service">Leistungszeitraum / -datum</label><input id="service" placeholder="z. B. September 2026"></div>
+      </div>
+      <div class="row">
+        <div><label for="taxid">Steuernummer oder USt-IdNr.</label><input id="taxid" placeholder="12/345/67890"></div>
+        <div>
+          <label for="vat">Umsatzsteuer</label>
+          <select id="vat">
+            <option value="19">19 %</option>
+            <option value="7">7 %</option>
+            <option value="ku">Kleinunternehmer (§ 19 UStG)</option>
+          </select>
+        </div>
+        <div><label for="due">Zahlungsziel (Tage)</label><input id="due" type="number" min="0" value="14"></div>
+      </div>
+
+      <label>Positionen</label>
+      <div class="item-row head" style="font-size:.8rem;color:var(--muted)"><span>Beschreibung</span><span>Menge</span><span>Einzelpreis (netto)</span><span></span></div>
+      <div id="items"></div>
+      <button class="btn secondary" id="add" type="button">+ Position</button>
+
+      <div class="row">
+        <div><label for="bank">Bankverbindung</label><textarea id="bank" placeholder="IBAN: DE00 0000 0000 0000 0000 00&#10;BIC: XXXXDEXXXXX"></textarea></div>
+        <div><label for="notes">Anmerkung (optional)</label><textarea id="notes" placeholder="Vielen Dank für die gute Zusammenarbeit!"></textarea></div>
+      </div>
+      <p style="margin-top:16px">
+        <button class="btn" id="print" type="button">Als PDF speichern / drucken</button>
+        <button class="btn secondary" id="reset" type="button">Formular leeren</button>
+      </p>
+      <p class="note">Tipp: Wähle im Druckdialog „Als PDF speichern" als Drucker. Prüfe deine Rechnung vor dem Versand – keine Steuerberatung.</p>
+    </div>
+    <h2>Vorschau</h2>
+  </div>
+
+  <div class="invoice" id="preview"></div>
+
+  <div data-promo></div>
+
+  <section class="no-print">
+    <h2>Welche Pflichtangaben muss eine Rechnung enthalten?</h2>
+    <p>Nach § 14 Abs. 4 UStG gehören auf eine Rechnung unter anderem: vollständiger Name und Anschrift von leistendem Unternehmer und Leistungsempfänger, Steuernummer oder USt-IdNr., Ausstellungsdatum, eine fortlaufende Rechnungsnummer, Menge und Art der Leistung, Zeitpunkt der Leistung, das Entgelt sowie Steuersatz und Steuerbetrag – oder ein Hinweis auf eine Steuerbefreiung.</p>
+    <h2>Was schreibe ich als Kleinunternehmer auf die Rechnung?</h2>
+    <p>Kleinunternehmer weisen keine Umsatzsteuer aus und vermerken stattdessen z. B.: „Gemäß § 19 UStG wird keine Umsatzsteuer berechnet." Der Generator fügt diesen Hinweis automatisch ein. Ob du Kleinunternehmer bist, prüfst du mit dem <a href="kleinunternehmer-check.html">Kleinunternehmer-Check</a>.</p>
+    <h2>Muss ich E-Rechnungen verschicken?</h2>
+    <p>Seit 2025 müssen Unternehmen in Deutschland E-Rechnungen empfangen können. Für den Versand gelten Übergangsfristen bis Ende 2026 bzw. 2027; Kleinunternehmer sind vom Versand ausgenommen. Eine PDF-Rechnung gilt dabei als „sonstige Rechnung". Kläre im Zweifel mit deiner Steuerberatung, was für dich gilt.</p>
+  </section>
+</main>
+<script src="../assets/calc.js"></script>
+<script src="../assets/config.js"></script>
+<script src="../assets/site.js"></script>
+<script>
+(function () {
+  "use strict";
+  var C = window.WerkbankCalc;
+  var KEY = "werkbank-rechnung-v1";
+  var fields = ["from", "to", "number", "date", "service", "taxid", "vat", "due", "bank", "notes"];
+  var $ = function (id) { return document.getElementById(id); };
+  var itemsEl = $("items");
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function addItem(it) {
+    it = it || { desc: "", qty: 1, price: "" };
+    var row = document.createElement("div");
+    row.className = "item-row";
+    row.innerHTML =
+      '<input data-k="desc" placeholder="Leistung" aria-label="Beschreibung">' +
+      '<input data-k="qty" type="number" step="any" aria-label="Menge">' +
+      '<input data-k="price" type="number" step="0.01" aria-label="Einzelpreis netto">' +
+      '<button type="button" aria-label="Position entfernen">×</button>';
+    row.querySelector('[data-k="desc"]').value = it.desc;
+    row.querySelector('[data-k="qty"]').value = it.qty;
+    row.querySelector('[data-k="price"]').value = it.price;
+    row.querySelector("button").onclick = function () { row.remove(); update(); };
+    itemsEl.appendChild(row);
+  }
+
+  function readItems() {
+    return Array.prototype.map.call(itemsEl.children, function (row) {
+      return {
+        desc: row.querySelector('[data-k="desc"]').value,
+        qty: row.querySelector('[data-k="qty"]').value,
+        price: row.querySelector('[data-k="price"]').value,
+      };
+    });
+  }
+
+  function state() {
+    var s = {};
+    fields.forEach(function (f) { s[f] = $(f).value; });
+    s.items = readItems();
+    return s;
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return "";
+    var p = iso.split("-");
+    return p[2] + "." + p[1] + "." + p[0];
+  }
+
+  function update() {
+    var s = state();
+    var ku = s.vat === "ku";
+    var rate = ku ? 0 : Number(s.vat);
+    var t = C.invoiceTotals(s.items, rate, ku);
+    var dueDate = "";
+    if (s.date) {
+      var d = new Date(s.date + "T12:00:00");
+      d.setDate(d.getDate() + (Number(s.due) || 0));
+      dueDate = d.toLocaleDateString("de-DE");
+    }
+    var rows = s.items.filter(function (it) { return it.desc || it.price; }).map(function (it, i) {
+      var sum = (Number(it.qty) || 0) * (Number(it.price) || 0);
+      return "<tr><td>" + (i + 1) + "</td><td>" + esc(it.desc) + '</td><td class="num">' + esc(it.qty) +
+        '</td><td class="num">' + C.formatEUR(Number(it.price) || 0) + '</td><td class="num">' + C.formatEUR(sum) + "</td></tr>";
+    }).join("");
+
+    $("preview").innerHTML =
+      '<div class="small">' + esc(s.from.split("\n").join(" · ")) + "</div>" +
+      '<div class="meta"><div style="white-space:pre-line">' + esc(s.to) + "</div>" +
+      "<div><strong>Rechnungsnr.:</strong> " + esc(s.number) +
+      "<br><strong>Datum:</strong> " + esc(fmtDate(s.date)) +
+      (s.service ? "<br><strong>Leistungszeitraum:</strong> " + esc(s.service) : "") +
+      (s.taxid ? "<br><strong>St.-Nr./USt-IdNr.:</strong> " + esc(s.taxid) : "") +
+      "</div></div>" +
+      "<h2>Rechnung</h2>" +
+      '<div class="table-scroll"><table><thead><tr><th>Pos.</th><th>Beschreibung</th><th class="num">Menge</th><th class="num">Einzelpreis</th><th class="num">Gesamt</th></tr></thead><tbody>' +
+      rows + "</tbody></table></div>" +
+      '<table class="totals">' +
+      (ku
+        ? '<tr><th>Gesamtbetrag</th><td class="num"><strong>' + C.formatEUR(t.gross) + "</strong></td></tr>"
+        : '<tr><td>Nettobetrag</td><td class="num">' + C.formatEUR(t.net) + "</td></tr>" +
+          "<tr><td>zzgl. " + rate + ' % USt.</td><td class="num">' + C.formatEUR(t.vat) + "</td></tr>" +
+          '<tr><th>Gesamtbetrag</th><td class="num"><strong>' + C.formatEUR(t.gross) + "</strong></td></tr>") +
+      "</table>" +
+      (ku ? "<p>Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.</p>" : "") +
+      (dueDate ? "<p>Bitte überweise den Gesamtbetrag bis zum " + dueDate + " unter Angabe der Rechnungsnummer.</p>" : "") +
+      (s.notes ? '<p style="white-space:pre-line">' + esc(s.notes) + "</p>" : "") +
+      (s.bank ? '<p class="small">' + esc(s.bank) + "</p>" : "");
+
+    try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) { /* Speicher nicht verfügbar */ }
+  }
+
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { saved = null; }
+  if (saved) {
+    fields.forEach(function (f) { if (saved[f] != null) $(f).value = saved[f]; });
+    (saved.items && saved.items.length ? saved.items : [null]).forEach(addItem);
+  } else {
+    $("date").value = new Date().toISOString().slice(0, 10);
+    addItem({ desc: "Webdesign – Landingpage", qty: 1, price: 800 });
+  }
+
+  document.querySelector("main").addEventListener("input", update);
+  $("add").onclick = function () { addItem(); update(); };
+  $("print").onclick = function () { window.print(); };
+  $("reset").onclick = function () {
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    fields.forEach(function (f) { if (f !== "vat" && f !== "due") $(f).value = ""; });
+    itemsEl.innerHTML = "";
+    addItem();
+    update();
+  };
+  update();
+})();
+</script>
+</body>
+</html>

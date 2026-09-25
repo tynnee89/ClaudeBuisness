@@ -1,0 +1,8 @@
+{
+  "name": "werkbank",
+  "private": true,
+  "description": "Kostenlose Tools für Selbstständige – statische Website auf GitHub Pages",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  }
+}
