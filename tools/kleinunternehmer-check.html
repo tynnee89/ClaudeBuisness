@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kleinunternehmerregelung prüfen (§ 19 UStG, Grenzen 2026) | Werkbank</title>
+<meta name="description" content="Kleinunternehmer-Check: Prüfe in 30 Sekunden, ob du die Kleinunternehmerregelung nach § 19 UStG nutzen kannst. Aktuelle Umsatzgrenzen 25.000 € / 100.000 €.">
+<link rel="canonical" href="https://tynnee89.github.io/ClaudeBuisness/tools/kleinunternehmer-check.html">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧰</text></svg>">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<main class="wrap">
+  <h1>Kleinunternehmer-Check (§ 19 UStG)</h1>
+  <p class="lead">Seit 2025 gelten neue Umsatzgrenzen: höchstens 25.000 € im Vorjahr und höchstens 100.000 € im laufenden Jahr.</p>
+  <div class="card">
+    <label><input type="checkbox" id="founded" style="width:auto"> Ich habe mein Unternehmen in diesem Jahr gegründet</label>
+    <div class="row">
+      <div id="prevWrap"><label for="prev">Umsatz im Vorjahr (netto, €)</label><input id="prev" type="number" value="18000"></div>
+      <div><label for="cur" id="curLabel">Umsatz im laufenden Jahr (netto, €)</label><input id="cur" type="number" value="30000"></div>
+    </div>
+    <div class="result" aria-live="polite">
+      <div class="big" id="verdict"></div>
+      <p style="margin:.4em 0 0" id="reason"></p>
+    </div>
+    <p class="note" style="margin-top:16px">Vereinfachte Prüfung ohne Gewähr. Sonderfälle (z. B. bestimmte steuerfreie Umsätze, Verzicht auf die Regelung für 5 Jahre) klärst du mit deiner Steuerberatung oder dem Finanzamt.</p>
+  </div>
+
+  <div data-promo></div>
+
+  <h2>Was bedeutet Kleinunternehmer?</h2>
+  <p>Als Kleinunternehmer stellst du keine Umsatzsteuer in Rechnung und musst in der Regel keine Umsatzsteuer-Voranmeldungen abgeben. Dafür darfst du auch keine Vorsteuer aus Einkäufen abziehen. Auf deinen Rechnungen steht stattdessen ein Hinweis wie „Gemäß § 19 UStG wird keine Umsatzsteuer berechnet." – das erledigt der <a href="rechnung.html">Rechnungsgenerator</a> automatisch.</p>
+  <h2>Was passiert, wenn ich die 100.000-€-Grenze überschreite?</h2>
+  <p>Seit 2025 endet die Kleinunternehmerregelung sofort mit dem Umsatz, durch den die Grenze von 100.000 € im laufenden Jahr überschritten wird. Ab diesem Umsatz musst du Umsatzsteuer berechnen. Im Gründungsjahr liegt die Grenze bei 25.000 €.</p>
+</main>
+<script src="../assets/calc.js"></script>
+<script src="../assets/config.js"></script>
+<script src="../assets/site.js"></script>
+<script>
+(function () {
+  var C = window.WerkbankCalc;
+  function $(id) { return document.getElementById(id); }
+  function update() {
+    var founded = $("founded").checked;
+    $("prevWrap").classList.toggle("hidden", founded);
+    $("curLabel").textContent = founded ? "Erwarteter Umsatz im Gründungsjahr (netto, €)" : "Umsatz im laufenden Jahr (netto, €)";
+    var r = C.smallBusiness({
+      foundedThisYear: founded,
+      previousRevenue: parseFloat($("prev").value) || 0,
+      currentRevenue: parseFloat($("cur").value) || 0,
+    });
+    $("verdict").textContent = r.eligible ? "✅ Kleinunternehmerregelung möglich" : "❌ Regelbesteuerung";
+    $("reason").textContent = r.reason;
+  }
+  document.querySelector(".card").addEventListener("input", update);
+  update();
+})();
+</script>
+</body>
+</html>

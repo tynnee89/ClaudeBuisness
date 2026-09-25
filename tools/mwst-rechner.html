@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MwSt-Rechner: Netto Brutto berechnen (19 % & 7 %) | Werkbank</title>
+<meta name="description" content="Mehrwertsteuer berechnen: Netto in Brutto und Brutto in Netto umrechnen mit 19 % oder 7 % MwSt. Kostenloser Online-Rechner mit Formel und Beispielen.">
+<link rel="canonical" href="https://tynnee89.github.io/ClaudeBuisness/tools/mwst-rechner.html">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧰</text></svg>">
+<link rel="stylesheet" href="../assets/style.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Wie rechne ich Netto in Brutto um?","acceptedAnswer":{"@type":"Answer","text":"Brutto = Netto × 1,19 (bei 19 % MwSt) bzw. Netto × 1,07 (bei 7 % MwSt)."}},
+{"@type":"Question","name":"Wie rechne ich Brutto in Netto um?","acceptedAnswer":{"@type":"Answer","text":"Netto = Brutto ÷ 1,19 (bei 19 % MwSt) bzw. Brutto ÷ 1,07 (bei 7 % MwSt)."}}]}
+</script>
+</head>
+<body data-root="../">
+<main class="wrap">
+  <h1>MwSt-Rechner: Netto ⇄ Brutto</h1>
+  <p class="lead">Betrag eingeben, Steuersatz wählen – fertig.</p>
+  <div class="card">
+    <div class="row">
+      <div><label for="amount">Betrag in €</label><input id="amount" type="number" step="0.01" value="100" inputmode="decimal"></div>
+      <div>
+        <label for="rate">Steuersatz</label>
+        <select id="rate"><option value="19">19 % (Regelsatz)</option><option value="7">7 % (ermäßigt)</option></select>
+      </div>
+      <div>
+        <label for="dir">Der Betrag ist …</label>
+        <select id="dir"><option value="net-to-gross">Netto → Brutto berechnen</option><option value="gross-to-net">Brutto → Netto berechnen</option></select>
+      </div>
+    </div>
+    <div class="result" aria-live="polite">
+      <table>
+        <tr><td>Nettobetrag</td><td class="num" id="net"></td></tr>
+        <tr><td>Mehrwertsteuer</td><td class="num" id="vat"></td></tr>
+        <tr><th>Bruttobetrag</th><td class="num big" id="gross"></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div data-promo></div>
+
+  <h2>Formeln zur Mehrwertsteuer</h2>
+  <ul>
+    <li><strong>Netto → Brutto:</strong> Brutto = Netto × (1 + Steuersatz). Bei 19 %: Netto × 1,19</li>
+    <li><strong>Brutto → Netto:</strong> Netto = Brutto ÷ (1 + Steuersatz). Bei 19 %: Brutto ÷ 1,19</li>
+    <li><strong>MwSt aus Brutto:</strong> MwSt = Brutto − Netto. Bei 19 % entspricht das ca. 15,97 % des Bruttobetrags.</li>
+  </ul>
+  <h2>Wann gilt 7 % statt 19 %?</h2>
+  <p>Der ermäßigte Satz von 7 % gilt u. a. für viele Lebensmittel, Bücher und Zeitungen, den öffentlichen Nahverkehr und Übernachtungen. Die meisten Dienstleistungen von Freelancern unterliegen dem Regelsatz von 19 %. Als Kleinunternehmer weist du gar keine Umsatzsteuer aus – mehr dazu im <a href="kleinunternehmer-check.html">Kleinunternehmer-Check</a>.</p>
+</main>
+<script src="../assets/calc.js"></script>
+<script src="../assets/config.js"></script>
+<script src="../assets/site.js"></script>
+<script>
+(function () {
+  var C = window.WerkbankCalc;
+  function $(id) { return document.getElementById(id); }
+  function update() {
+    var r = C.vat(parseFloat($("amount").value) || 0, Number($("rate").value), $("dir").value);
+    $("net").textContent = C.formatEUR(r.net);
+    $("vat").textContent = C.formatEUR(r.vat);
+    $("gross").textContent = C.formatEUR(r.gross);
+  }
+  ["amount", "rate", "dir"].forEach(function (id) { $(id).addEventListener("input", update); });
+  update();
+})();
+</script>
+</body>
+</html>
